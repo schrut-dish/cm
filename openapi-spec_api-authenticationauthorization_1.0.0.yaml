@@ -1,0 +1,153 @@
+openapi: 3.0.1
+info:
+  title: Partner Integration API - Authentication/Authorization
+  version: 1.0.0
+  contact:
+    name: Support department
+  description: "
+<h2>How to</h2>
+Eijsink uses the OAuth2.0 specification for authentication and authorization.
+OAuth 2.0 is a protocol that allows a user to grant limited access to their resources on one site, to another site, without having to expose their credentials.
+<br/><br/>
+
+To get access to the protected resources OAuth 2.0 uses Access Tokens.
+An Access Token is a string representing the granted permissions.
+Access Tokens are inJSON Web Token (JWT) format. JWTs contain three parts: a header, a payload, and a signature:
+
+<ul>
+  <li>The <strong>header</strong> contains metadata about the type of token and the cryptographic algorithms used to secure its contents.</li>
+  <li>The <strong>payload</strong> contains a set of claims, which are statements about the permissions that should be allowed, and other information like the intended audience and the expiration time.</li>
+  <li>The <strong>signature</strong> is used to validate that the token is trustworthy and has not been tampered with.</li>
+</ul>
+
+The OAuth 2.0 Authorization Framework specification defines four flows to get an Access Token.
+These flows are called <strong>grant</strong> types.
+Deciding which one is suited for your case depends mostly on the type of your application.
+
+<ul>
+  <li><strong>Authorization Code</strong>: used by Web Apps executing on a server. This is also used by mobile apps, using the Proof Key for Code Exchange (PKCE) technique.</li>
+  <li><strong>Implicit</strong>: used by JavaScript-centric apps (Single-Page Applications) executing on the user's browser.</li>
+  <li><strong>Resource Owner Password Credentials</strong>: used by trusted apps.</li>
+  <li><strong>Client Credentials</strong>: used for machine-to-machine communication.</li>
+</ul>
+
+<br/>
+For securing partner API, which are merely machine-to-machine integrations, the <strong>client_credentials</strong> grant type is used.
+<br/><br/>
+
+The client_credentials grant (defined in <a href='https://datatracker.ietf.org/doc/html/rfc6749#section-4.4'>RFC 6749, section 4.4</a>) is suitable for machine-to-machine authentication where a specific user’s permission to access data/services is not required.
+This flow is characterized by three parties: the caller(client), the authorization server (AWS Cognito) and the resource server (AWS API Gateway).
+The follow is depicted in the following diagram:
+<br/></br>
+<img style='background-color:#fff' src='../assets/authentication1.png' alt='Authentication process'>
+<br/>
+
+Partners that wish access to services will receive a <strong>client_id</strong> and a <strong>client_secret</strong> token that can be used to retrieve an access_token that can be used to provide authentication for each subsequent call.
+<br/><br/>
+
+To retrieve an access_token the client sends a POST request to the authorization server with the following headers and query parameters:
+
+<ul>
+  <li>Header: content-type= application/x-www-form-urlencoded</li>
+  <li>Query param: client_id = {client-id}</li>
+  <li>Query param: client_secret = {client-secret}</li>
+  <li>Query param: grant_type= client_credentials</li>
+</ul>
+
+</br>
+<strong>The response contains a signed JSON Web Token (JWT), the token's type (which is Bearer), and in how much time it expires in Unix time (3600 seconds, which means 1 hour).</strong>
+</br>
+
+<h2 style='color:red'>Please note, this is important, do not authenticate before each and every API call</h2>
+
+Once you have received a valid <strong>access_token</strong> you can use this <strong>for multiple API calls</strong> during one hour. Please do NOT authenticate before each and every API call.
+Only after an hour, or after receiving an authentication error, authenticate (fetch a new token) again.
+So, please do NOT authenticate for each an every API call.
+If you do the API calls will be much slower and the superfluous authentication calls will introduce additional costs.
+<br/></br>
+
+If you decode the access_token, you will see the following claims:
+<br/>
+<img src='../assets/authentication2.png' alt='JWT token'>
+<br/>
+
+The access_token will then have to be issued as a Bearer token in the <strong>Authorization</strong> header of each subsequent request.
+<br/></br>
+
+<h2>Impersonate other clients</h3>
+To enable a specific client to call any partner APIs (integration or onboarding), the client_credentials authorization flow has been extended.
+If a parameter impersonate_client_id has been provided, next to the client_id and the client_secret, and authorization has been granted to impersonate the specific other client, the access token of that impersonated client will be returned and can be used to call any partner API as if you where the specified client.
+
+"
+
+servers:
+  - url: https://partners{silo}.{baseurl}/oauth2
+    description: Silo server
+    variables:
+      silo:
+        default: .sandbox
+      baseurl:
+        enum: [ booqcloud.com ]
+        default: booqcloud.com
+  - url: https://partners.sandbox.booqcloud.com/oauth2
+    description: Sandbox server
+  - url: https://partners.booqcloud.com/oauth2
+    description: Production server
+paths:
+  /token:
+    post:
+      summary: Get Access Token
+      description: Retrieve an access token to access the protected resources
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  example: "client_credentials"
+                client_id:
+                  type: string
+                  example: "your_client_id"
+                client_secret:
+                  type: string
+                  example: "your_client_secret"
+                impersonate_client_id:
+                  type: string
+                  example: "client_id_to_impersonate"
+              required:
+                - grant_type
+                - client_id
+                - client_secret
+      responses:
+        200:
+          description: Access token retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: "newly.generated.accesstoken"
+                  expires_in:
+                    type: integer
+                    example: 3600
+                  token_type:
+                    type: string
+                    example: "Bearer"
+                  scope:
+                    type: string
+                    example: "partner/cm partner/externalorders partner/onboarding partner/payments partner/pim partner/pos partner/rewards"
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "invalid_request"

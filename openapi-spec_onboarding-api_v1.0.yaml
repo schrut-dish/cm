@@ -1,0 +1,1013 @@
+openapi: 3.0.1
+info:
+  title: booq's partner onboarding API
+  contact:
+    name: Support department
+  version: V1.0
+servers:
+  - url: /api
+tags:
+  - name: Currencies
+    description: Currency Controller
+  - name: Customers
+    description: Onboarding API for Customers
+  - name: PaymentMethods
+    description: Onboarding API for PaymentMethods
+  - name: Stores
+    description: Store Controller
+  - name: TurnoverGroups
+    description: Onboarding API for TurnoverGroups
+  - name: VatTariffs
+    description: Onboarding API for VatTariffs
+paths:
+  /onboarding/v1/currencies:
+    get:
+      tags:
+        - Currencies
+      summary: Retrieve a list of all records at once, or paged over multiple requests.
+      operationId: getAllUsingGET_77
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: count
+          in: query
+          description: The number of entities to include. The request returns this number
+            of items, or less when the last item is reached.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "50"
+        - name: from
+          in: query
+          description: The marker indicating where to continue reading entities from
+            the dataset.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "284"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyResponse'
+      deprecated: false
+  /onboarding/v1/currencies/{id}:
+    get:
+      tags:
+        - Currencies
+      summary: Retrieve a specific record by ID
+      operationId: getByIdUsingGET
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+        404:
+          description: The record with specified ID does not exist.
+          content: {}
+      deprecated: false
+  /onboarding/v1/customers:
+    get:
+      tags:
+        - Customers
+      summary: Retrieve a list of all records at once, or paged over multiple requests.
+      operationId: getAllUsingGET_78
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: count
+          in: query
+          description: The number of entities to include. The request returns this number
+            of items, or less when the last item is reached.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "50"
+        - name: from
+          in: query
+          description: The marker indicating where to continue reading entities from
+            the dataset.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "284"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+      deprecated: false
+  /onboarding/v1/customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Retrieve a specific record by ID
+      operationId: getByIdUsingGET_1
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        404:
+          description: The record with specified ID does not exist.
+          content: {}
+      deprecated: false
+    put:
+      tags:
+        - Customers
+      summary: Creates or updates resource.
+      description: "Missing optional keys/fields are ignored during updates and set\
+        \ to a default value during entity creation. This default value is entirely\
+        \ up to the business logic of booq. \nFor recoverable resources: a `PUT` to\
+        \ the same external ID will \"recover\" the resource with  (a) the new payload\
+        \ provided, but (b) there's no guarantee that references to this object will\
+        \ be recreated."
+      operationId: saveRecordUsingPUT_25
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: The external ID of a booq resource
+          required: true
+          schema:
+            type: string
+          example: e5cbc534-4064-4127-a796-e96f08b1bff5
+      requestBody:
+        description: request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+        400:
+          description: Required property is missing or has wrong format in provided
+            payload
+          content: {}
+        401:
+          description: Missing or wrong authentication.
+          content: {}
+        406:
+          description: Referenced object with specified external ID does not exist.
+          content: {}
+        409:
+          description: Specified external ID already assigned to other resource within
+            an enterprise.
+          content: {}
+        500:
+          description: Internal Server Error.
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: request
+  /onboarding/v1/paymentmethods:
+    get:
+      tags:
+        - PaymentMethods
+      summary: Retrieve a list of all records at once, or paged over multiple requests.
+      operationId: getAllUsingGET_79
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: count
+          in: query
+          description: The number of entities to include. The request returns this number
+            of items, or less when the last item is reached.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "50"
+        - name: from
+          in: query
+          description: The marker indicating where to continue reading entities from
+            the dataset.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "284"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodResponse'
+      deprecated: false
+  /onboarding/v1/paymentmethods/{id}:
+    get:
+      tags:
+        - PaymentMethods
+      summary: Retrieve a specific record by ID
+      operationId: getByIdUsingGET_2
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        404:
+          description: The record with specified ID does not exist.
+          content: {}
+      deprecated: false
+  /onboarding/v1/stores:
+    get:
+      tags:
+        - Stores
+      summary: Retrieve a list of all records at once, or paged over multiple requests.
+      operationId: getAllUsingGET_80
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: count
+          in: query
+          description: The number of entities to include. The request returns this number
+            of items, or less when the last item is reached.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "50"
+        - name: from
+          in: query
+          description: The marker indicating where to continue reading entities from
+            the dataset.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "284"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+      deprecated: false
+  /onboarding/v1/stores/{id}:
+    get:
+      tags:
+        - Stores
+      summary: Retrieve a specific record by ID
+      operationId: getByIdUsingGET_3
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreDTO'
+        404:
+          description: The record with specified ID does not exist.
+          content: {}
+      deprecated: false
+  /onboarding/v1/stores/{id}/salespoints:
+    get:
+      tags:
+        - Stores
+      summary: Retrieve sales points of a store.
+      operationId: getSalesPointsUsingGET_1
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: expanded
+          in: query
+          description: Whether to expand children of all the sales points
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "true"
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreSalesPointsResponse'
+      deprecated: false
+  /onboarding/v1/turnovergroups:
+    get:
+      tags:
+        - TurnoverGroups
+      summary: Retrieve a list of all records at once, or paged over multiple requests.
+      operationId: getAllUsingGET_81
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: count
+          in: query
+          description: The number of entities to include. The request returns this number
+            of items, or less when the last item is reached.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "50"
+        - name: from
+          in: query
+          description: The marker indicating where to continue reading entities from
+            the dataset.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "284"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnoverGroupResponse'
+      deprecated: false
+  /onboarding/v1/turnovergroups/{id}:
+    get:
+      tags:
+        - TurnoverGroups
+      summary: Retrieve a specific record by ID
+      operationId: getByIdUsingGET_4
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnoverGroup'
+        404:
+          description: The record with specified ID does not exist.
+          content: {}
+      deprecated: false
+  /onboarding/v1/vattariffs:
+    get:
+      tags:
+        - VatTariffs
+      summary: Retrieve a list of all records at once, or paged over multiple requests.
+      operationId: getAllUsingGET_82
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: count
+          in: query
+          description: The number of entities to include. The request returns this number
+            of items, or less when the last item is reached.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "50"
+        - name: from
+          in: query
+          description: The marker indicating where to continue reading entities from
+            the dataset.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "284"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VatTariffResponse'
+      deprecated: false
+  /onboarding/v1/vattariffs/{id}:
+    get:
+      tags:
+        - VatTariffs
+      summary: Retrieve a specific record by ID
+      operationId: getByIdUsingGET_5
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VatTariff'
+        404:
+          description: The record with specified ID does not exist.
+          content: {}
+      deprecated: false
+components:
+  schemas:
+    Address:
+      title: Address
+      required:
+        - city
+        - houseNumber
+        - street
+        - zipCode
+      type: object
+      properties:
+        zipCode:
+          type: string
+          example: 1111 AA
+        street:
+          type: string
+          example: Milkyway
+        houseNumber:
+          type: string
+          example: "42"
+        city:
+          type: string
+          example: Hengelo
+        country:
+          type: string
+          example: The Netherlands
+    ContactInfo:
+      title: ContactInfo
+      type: object
+      properties:
+        description:
+          type: string
+        email:
+          type: string
+          description: The customer's email address.
+          example: info@awesome-customer.tld
+        phoneNumbers:
+          $ref: '#/components/schemas/PhoneNumber'
+        siteUrl:
+          type: string
+          description: The URL of the customer's web site.
+          example: www.awesome-customer.tld
+    Currency:
+      title: Currency
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the currency.
+          example: CURR-1
+        name:
+          type: string
+          description: The name of the currency.
+          example: Euro
+        code:
+          type: string
+          description: The code of the currency.
+          example: EUR
+        symbol:
+          type: string
+          description: The symbol of the currency.
+          example: €
+        exchangeRate:
+          type: number
+          description: The exchange rate of the currency.
+          example: 1.0
+        numberOfDecimals:
+          type: integer
+          description: The number of decimals for the currency.
+          format: int32
+          example: 2
+        smallestPossibleUnit:
+          type: number
+          description: The smallest possible unit of the currency.
+          example: 0.01
+        defaultCurrency:
+          type: number
+          description: Indicates if it is the default currency.
+          example: 1.0
+    CurrencyResponse:
+      title: CurrencyResponse
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of items in the response.
+          format: int32
+          example: 50
+        moreData:
+          type: boolean
+          description: If a limited amount of items was requested, this property indicates
+            whether there are more items to retrieve.
+          example: true
+        marker:
+          type: string
+          description: If a limited amount of items was requested and there are more
+            items, this value should be used as the 'from' parameter in the next request.
+          example: "234"
+        currencies:
+          type: array
+          description: A list of currencies.
+          items:
+            $ref: '#/components/schemas/Currency'
+    Customer:
+      title: Customer
+      required:
+        - name
+        - parentId
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the Customer.
+          example: CUST001
+        name:
+          type: string
+          description: The name
+          example: First Company
+        parentId:
+          type: string
+          description: "Customers are hierarchically structured. \n Set this to the\
+            \ ID of the parent. If no parentId is set the customer \n will be added\
+            \ to booq's (logical) customer root node.\nThis property is *mandatory*\
+            \ when creating a new customer."
+          example: parent-id
+        searchKey:
+          type: string
+          description: A string that is used for search purposes.
+          example: find it
+        cardId:
+          type: string
+          description: Identifier used by an identification system (e.g. card) to
+            identify this customer.
+          example: 39485GD8
+        commercialAddress:
+          $ref: '#/components/schemas/Address'
+        contactInfo:
+          $ref: '#/components/schemas/ContactInfo'
+        locale:
+          type: string
+          description: The customer's locale is a combination of the ISO 639 language
+            code and the ISO 3166 country code separated with a hyphen
+          example: nl-NL
+        payer:
+          type: string
+          description: ID of existing customer that will receive the bills.
+          example: customer-ID
+        creditAllowed:
+          type: boolean
+          example: true
+        creditLimit:
+          type: number
+          example: 2300.0
+        invoiceCurrency:
+          type: string
+          example: EUR
+        customerAccountAllowed:
+          type: boolean
+          example: true
+        customerAccountCreditLimit:
+          type: number
+          example: 2300.0
+    CustomerResponse:
+      title: CustomerResponse
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of items in the response.
+          format: int32
+          example: 50
+        moreData:
+          type: boolean
+          description: If a limited amount of items was requested, this property indicates
+            whether there are more items to retrieve.
+          example: true
+        marker:
+          type: string
+          description: If a limited amount of items was requested and there are more
+            items, this value should be used as the 'from' parameter in the next request.
+          example: "234"
+        customers:
+          type: array
+          description: A list of customers.
+          items:
+            $ref: '#/components/schemas/Customer'
+    PaymentMethod:
+      title: PaymentMethod
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the payment method.
+          example: CASH-12
+        name:
+          type: string
+          description: The name.
+          example: Contant (afgerond)
+        currency:
+          type: string
+          description: The name.
+          example: EUR
+    PaymentMethodResponse:
+      title: PaymentMethodResponse
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of items in the response.
+          format: int32
+          example: 50
+        moreData:
+          type: boolean
+          description: If a limited amount of items was requested, this property indicates
+            whether there are more items to retrieve.
+          example: true
+        marker:
+          type: string
+          description: If a limited amount of items was requested and there are more
+            items, this value should be used as the 'from' parameter in the next request.
+          example: "234"
+        paymentMethods:
+          type: array
+          description: A list of payment methods.
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+    PhoneNumber:
+      title: PhoneNumber
+      required:
+        - name
+        - number
+      type: object
+      properties:
+        name:
+          type: string
+          description: A short description for the phone number.
+          example: work mobile
+        number:
+          type: string
+          description: The actual phone number.
+          example: 06 12345678
+    StoreDTO:
+      title: StoreDTO
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the store.
+          example: Store-1
+        name:
+          type: string
+          description: The name of the store.
+          example: Store-1
+    StoreResponse:
+      title: StoreResponse
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of items in the response.
+          format: int32
+          example: 50
+        moreData:
+          type: boolean
+          description: If a limited amount of items was requested, this property indicates
+            whether there are more items to retrieve.
+          example: true
+        marker:
+          type: string
+          description: If a limited amount of items was requested and there are more
+            items, this value should be used as the 'from' parameter in the next request.
+          example: "234"
+        stores:
+          type: array
+          description: A list of stores.
+          items:
+            $ref: '#/components/schemas/StoreDTO'
+    StoreSalesPointDTO:
+      title: StoreSalesPointDTO
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the SalesPoint.
+          example: SP-1
+        name:
+          type: string
+          description: The name of the store.
+          example: Restaurant
+        salesPoints:
+          type: array
+          description: Child sales points.
+          items:
+            $ref: '#/components/schemas/StoreSalesPointDTO'
+    StoreSalesPointsResponse:
+      title: StoreSalesPointsResponse
+      type: object
+      properties:
+        salesPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/StoreSalesPointDTO'
+        storeSalesPointId:
+          type: string
+    TurnoverGroup:
+      title: TurnoverGroup
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the turnover group.
+          example: TU894
+        name:
+          type: string
+          description: The name.
+          example: Warme dranken
+        parentID:
+          type: string
+          description: The ID of the parent turnover group, if there is one.
+          example: Warme dranken
+    TurnoverGroupResponse:
+      title: TurnoverGroupResponse
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of items in the response.
+          format: int32
+          example: 50
+        moreData:
+          type: boolean
+          description: If a limited amount of items was requested, this property indicates
+            whether there are more items to retrieve.
+          example: true
+        marker:
+          type: string
+          description: If a limited amount of items was requested and there are more
+            items, this value should be used as the 'from' parameter in the next request.
+          example: "234"
+        turnoverGroups:
+          type: array
+          description: A list of turnover groups.
+          items:
+            $ref: '#/components/schemas/TurnoverGroup'
+    VatTariff:
+      title: VatTariff
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the VAT tariff.
+          example: HOOG
+        name:
+          type: string
+          description: The name.
+          example: BTW hoog
+        code:
+          type: string
+          description: A code.
+          example: H
+        percentage:
+          type: number
+          description: The VAT percentage.
+          example: 21.0
+    VatTariffResponse:
+      title: VatTariffResponse
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of items in the response.
+          format: int32
+          example: 50
+        moreData:
+          type: boolean
+          description: If a limited amount of items was requested, this property indicates
+            whether there are more items to retrieve.
+          example: true
+        marker:
+          type: string
+          description: If a limited amount of items was requested and there are more
+            items, this value should be used as the 'from' parameter in the next request.
+          example: "234"
+        vatTariffs:
+          type: array
+          description: A list of VAT tariffs.
+          items:
+            $ref: '#/components/schemas/VatTariff'

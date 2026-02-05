@@ -1,0 +1,133 @@
+openapi: 3.0.1
+info:
+  title: booq's product information API
+  contact:
+    name: Support department
+  version: V1.0
+servers:
+  - url: //localhost:8080/api
+tags:
+  - name: Products
+    description: Product information API for Products
+paths:
+  /pim/v1/products:
+    get:
+      tags:
+        - Products
+      summary: Retrieve a list of all records at once, or paged over multiple requests.
+      operationId: getAllUsingGET_84
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: count
+          in: query
+          description: The number of entities to include. The request returns this number
+            of items, or less when the last item is reached.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "50"
+        - name: from
+          in: query
+          description: The marker indicating where to continue reading entities from
+            the dataset.
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: "284"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+      deprecated: false
+  /pim/v1/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Retrieve a specific record by ID
+      operationId: getByIdUsingGET_7
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer your_JWT_token
+          required: true
+          schema:
+            type: string
+            default: Bearer your_JWT_token
+        - name: X-booq-enterpriseid
+          in: header
+          description: booq enterprise id
+          required: true
+          schema:
+            type: string
+            default: enterprise_id
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: The record with specified ID does not exist.
+          content: {}
+      deprecated: false
+components:
+  schemas:
+    Product:
+      title: Product
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the product.
+          example: PROD-999
+        name:
+          type: string
+          description: The name.
+          example: Hamburger
+    ProductResponse:
+      title: ProductResponse
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of items in the response.
+          format: int32
+          example: 50
+        products:
+          type: array
+          description: ' A list of products.'
+          items:
+            $ref: '#/components/schemas/Product'
+        moreData:
+          type: boolean
+          description: If a limited amount of items was requested, this property indicates
+            whether there are more items to retrieve.
+          example: true
+        marker:
+          type: string
+          description: If a limited amount of items was requested and there are more
+            items, this value should be used as the 'from' parameter in the next request.
+          example: "234"
